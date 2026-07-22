@@ -44,7 +44,7 @@ idf.py -p PORT flash monitor
 ## Blynk MQTT protocol notes
 
 - Auth: username is always the literal string `device`; the password is the device's Blynk Auth Token.
-- Publish device metadata on every clean connection to `info/mcu`: `{"tmpl":"...","ver":"...","build":"...","type":"...","rxbuff":1024}` — `rxbuff` reports the MQTT client's actual buffer size (`BLYNK_MQTT_BUFFER_SIZE` in `app_main.c`), which caps the largest message the broker can send back.
+- Publish device metadata on every clean connection to `info/mcu`: `{"tmpl":"...","ver":"...","build":"...","type":"...","rxbuff":1024}` — `rxbuff` reports the MQTT client's actual buffer size (`BLYNK_MQTT_BUFFER_SIZE` in `blynk_mqtt.c`), which caps the largest message the broker can send back.
 - Subscribe to `downlink/ds/#` to receive datastream (virtual pin) updates pushed from the Blynk app/dashboard; the topic suffix after `downlink/ds/` is the datastream name.
 - Publish datastream updates uplink to `ds/<name>`, e.g. `ds/V0` with the raw value as payload.
 
@@ -57,7 +57,7 @@ The example also handles these downlink control topics (all subscribed at QoS 1 
 
 `downlink/redirect` and `downlink/ota/json` use a minimal hand-rolled flat-JSON field lookup (no cJSON dependency) — it only understands single-level `"key":"value"`/`"key":123` pairs, which is all these control payloads contain.
 
-The binary also embeds a [Blynk binary info tag](https://docs.blynk.io/en/blynk.cloud-mqtt-api/device-mqtt-api/ota#blynk-binary-info-tag) (`firmwareTag[]` in `app_main.c`) — a null-separated `key\0value\0` blob starting with `"blnkinf"` that Blynk.Cloud scans out of the flashed image to identify the running firmware (`mcu`, `fw-type`, `build`, `blynk`, `hw`) for OTA version checks.
+The binary also embeds a [Blynk binary info tag](https://docs.blynk.io/en/blynk.cloud-mqtt-api/device-mqtt-api/ota#blynk-binary-info-tag) (`firmwareTag[]` in `blynk_mqtt.c`) — a null-separated `key\0value\0` blob starting with `"blnkinf"` that Blynk.Cloud scans out of the flashed image to identify the running firmware (`mcu`, `fw-type`, `build`, `blynk`, `hw`) for OTA version checks.
 
 See https://docs.blynk.io for the full MQTT API reference.
 
