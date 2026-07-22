@@ -2,7 +2,7 @@ menu "Blynk Configuration"
 
     config BLYNK_MQTT_BROKER_URI
         string "Blynk MQTT broker URI"
-        default "mqtts://fra1.blynk.cloud:8883"
+        default "mqtts://blynk.cloud:8883"
         help
             URI of the Blynk MQTT broker (TLS). Must match the datacenter
             region your Blynk account/device was created in, e.g.:

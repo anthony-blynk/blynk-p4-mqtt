@@ -25,7 +25,7 @@ idf.py menuconfig
 
 1. **Example Connection Configuration** — select "connect using WiFi interface" (`EXAMPLE_CONNECT_WIFI`, already the project default in `sdkconfig.defaults`) and set your Wi-Fi SSID/password. The connection goes out over the C6 co-processor automatically; no separate transport config is needed here — that's under "Component config → Wi-Fi Remote" (already set to `esp32c6` / SDIO).
 2. **Blynk Configuration**:
-   - `BLYNK_MQTT_BROKER_URI` — defaults to `mqtts://fra1.blynk.cloud:8883`. Change the region prefix (`fra1`, `lon1`, `sgp1`, ...) to match the datacenter your Blynk account/device lives in — check the device's "Device Info" page in Blynk.Console if unsure.
+   - `BLYNK_MQTT_BROKER_URI` — defaults to `mqtts://blynk.cloud:8883`. Change the region prefix (`fra1`, `lon1`, `sgp1`, ...) to match the datacenter your Blynk account/device lives in — check the device's "Device Info" page in Blynk.Console if unsure.
    - `BLYNK_TEMPLATE_ID` — the Template ID from your Blynk.Console template.
    - `BLYNK_AUTH_TOKEN` — the per-device Auth Token from Blynk.Console (Device Info page).
    - `FIRMWARE_VERSION` — bump before each release; reported in `info/mcu` and the OTA binary info tag's `mcu` field.
