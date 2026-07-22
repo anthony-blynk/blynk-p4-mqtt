@@ -55,7 +55,7 @@ The example also handles these downlink control topics (all subscribed at QoS 1 
 - `downlink/redirect` — reconnects the MQTT client to a new broker. Payload can be a full URI (`mqtts://host:port`) or JSON `{"host":"...","port":8883}`.
 - `downlink/ota/json` — downloads and applies a firmware update via `esp_https_ota()`, then reboots. Payload: `{"url":"https://.../firmware.bin"}`.
 
-`downlink/redirect` and `downlink/ota/json` use a minimal hand-rolled flat-JSON field lookup (no cJSON dependency) — it only understands single-level `"key":"value"`/`"key":123` pairs, which is all these control payloads contain.
+`downlink/redirect` and `downlink/ota/json` parse their JSON payload with [cJSON](https://github.com/DaveGamble/cJSON) (`espressif/cjson` managed component).
 
 The binary also embeds a [Blynk binary info tag](https://docs.blynk.io/en/blynk.cloud-mqtt-api/device-mqtt-api/ota#blynk-binary-info-tag) (`firmwareTag[]` in `blynk_mqtt.c`) — a null-separated `key\0value\0` blob starting with `"blnkinf"` that Blynk.Cloud scans out of the flashed image to identify the running firmware (`mcu`, `fw-type`, `build`, `blynk`, `hw`) for OTA version checks.
 

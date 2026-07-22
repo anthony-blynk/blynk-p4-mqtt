@@ -26,6 +26,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "cJSON.h"
 #include "esp_crt_bundle.h"
 #include "esp_http_client.h"
 #include "esp_https_ota.h"
@@ -75,50 +76,6 @@ static const struct {
     { BLYNK_TOPIC_OTA, 1 },
 };
 
-/* Minimal flat-JSON field lookup; the control payloads above are small,
- * single-level objects (e.g. {"url":"...","size":123}), so a full JSON
- * parser isn't needed. */
-static bool json_get_string(const char *json, const char *key, char *out, size_t out_size)
-{
-    char pattern[32];
-    snprintf(pattern, sizeof(pattern), "\"%s\"", key);
-    const char *p = strstr(json, pattern);
-    if (!p || !(p = strchr(p + strlen(pattern), ':'))) {
-        return false;
-    }
-    p++;
-    while (*p == ' ' || *p == '\t') {
-        p++;
-    }
-    if (*p != '"') {
-        return false;
-    }
-    p++;
-    const char *end = strchr(p, '"');
-    if (!end) {
-        return false;
-    }
-    size_t len = (size_t)(end - p);
-    if (len >= out_size) {
-        len = out_size - 1;
-    }
-    memcpy(out, p, len);
-    out[len] = '\0';
-    return true;
-}
-
-static bool json_get_int(const char *json, const char *key, int *out)
-{
-    char pattern[32];
-    snprintf(pattern, sizeof(pattern), "\"%s\"", key);
-    const char *p = strstr(json, pattern);
-    if (!p || !(p = strchr(p + strlen(pattern), ':'))) {
-        return false;
-    }
-    *out = atoi(p + 1);
-    return true;
-}
-
 static void ota_task(void *pvParameter)
 {
     char *url = pvParameter;
@@ -146,12 +103,21 @@ static void ota_task(void *pvParameter)
 
 static void handle_ota_request(const char *payload)
 {
-    char url[256];
-    if (!json_get_string(payload, "url", url, sizeof(url))) {
-        ESP_LOGW(TAG, "OTA payload missing 'url', ignoring: %s", payload);
+    cJSON *root = cJSON_Parse(payload);
+    if (!root) {
+        ESP_LOGW(TAG, "OTA payload is not valid JSON, ignoring: %s", payload);
         return;
     }
-    char *url_copy = strdup(url);
+
+    const cJSON *url_item = cJSON_GetObjectItemCaseSensitive(root, "url");
+    if (!cJSON_IsString(url_item) || url_item->valuestring[0] == '\0') {
+        ESP_LOGW(TAG, "OTA payload missing 'url', ignoring: %s", payload);
+        cJSON_Delete(root);
+        return;
+    }
+
+    char *url_copy = strdup(url_item->valuestring);
+    cJSON_Delete(root);
     if (!url_copy) {
         ESP_LOGE(TAG, "OTA: out of memory");
         return;
@@ -170,14 +136,23 @@ static void handle_redirect(esp_mqtt_client_handle_t client, const char *payload
         /* Payload is already a full broker URI */
         strlcpy(new_uri, payload, sizeof(new_uri));
     } else {
-        char host[96];
-        int port = 8883;
-        if (!json_get_string(payload, "host", host, sizeof(host))) {
-            ESP_LOGW(TAG, "redirect payload missing 'host', ignoring: %s", payload);
+        cJSON *root = cJSON_Parse(payload);
+        if (!root) {
+            ESP_LOGW(TAG, "redirect payload is not valid JSON, ignoring: %s", payload);
             return;
         }
-        json_get_int(payload, "port", &port);
-        snprintf(new_uri, sizeof(new_uri), "mqtts://%s:%d", host, port);
+
+        const cJSON *host_item = cJSON_GetObjectItemCaseSensitive(root, "host");
+        if (!cJSON_IsString(host_item) || host_item->valuestring[0] == '\0') {
+            ESP_LOGW(TAG, "redirect payload missing 'host', ignoring: %s", payload);
+            cJSON_Delete(root);
+            return;
+        }
+
+        const cJSON *port_item = cJSON_GetObjectItemCaseSensitive(root, "port");
+        int port = cJSON_IsNumber(port_item) ? port_item->valueint : 8883;
+        snprintf(new_uri, sizeof(new_uri), "mqtts://%s:%d", host_item->valuestring, port);
+        cJSON_Delete(root);
     }
 
     ESP_LOGW(TAG, "server redirect to %s", new_uri);

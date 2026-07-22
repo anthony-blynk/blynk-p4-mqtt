@@ -1,4 +1,14 @@
 dependencies:
+  espressif/cjson:
+    component_hash: e788323270d90738662d66fffa910bfe1fba019bba087f01557e70c40485b469
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.7.19~2
   espressif/eppp_link:
     component_hash: 04f7f31868b8ae6014c96132740a192d09611a6e46aaa7038c865ffc7e26b38f
     dependencies:
@@ -165,19 +175,6 @@ dependencies:
       registry_url: https://components.espressif.com/
       type: service
     version: 1.3.0
-  espressif/ip101:
-    component_hash: e3be457b9ae50d7b348e5418ef1a334b3f943a1f0df16a4d42767b89ae15d533
-    dependencies:
-    - name: idf
-      require: private
-      version: '>=6.0'
-    source:
-      registry_url: https://components.espressif.com
-      type: service
-    targets:
-    - esp32
-    - esp32p4
-    version: 1.0.0
   espressif/mqtt:
     component_hash: ffdad5659706b4dc14bc63f8eb73ef765efa015bf7e9adf71c813d52a2dc9342
     dependencies:
@@ -217,10 +214,11 @@ dependencies:
       type: local
     version: '*'
 direct_dependencies:
+- espressif/cjson
 - espressif/esp_wifi_remote
 - espressif/mqtt
 - idf
 - protocol_examples_common
-manifest_hash: b686eb46af1321e13aa4c0303adeeb3c9563e6befcad53fca74e78f88f240f88
+manifest_hash: 213fe41b05b6dd4f1a5fe8b9724f0d2e709edb580e261c729a0b6e4d90876e17
 target: esp32p4
 version: 3.0.0
