@@ -1,0 +1,30 @@
+# Enable the built-in certificate bundle for TLS server verification
+CONFIG_MBEDTLS_CERTIFICATE_BUNDLE=y
+CONFIG_MBEDTLS_CERTIFICATE_BUNDLE_DEFAULT_FULL=y
+
+# This board uses an early ESP32-P4 silicon revision (v1.3), which is below
+# the v3.1 default minimum. Rev <3.0 and >=3.0 are mutually exclusive in
+# ESP-IDF (real HW differences), so target v1.x explicitly.
+CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y
+CONFIG_ESP32P4_REV_MIN_100=y
+
+# Rev <3.0 chips only have a 360MHz CPLL (no 400MHz path) - rtc_clk_cpu_freq_mhz_to_config()
+# only accepts 90/180/360 for this revision range. The default 400MHz asserts at boot
+# (esp_clk_init, clk.c) since 400 isn't a computable config at all on this silicon.
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_360=y
+# CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_400 is not set
+
+# P4 has no native Wi-Fi and this board has no Ethernet PHY; connect via the
+# C6 co-processor over Wi-Fi. Set your real SSID/password with `idf.py
+# menuconfig` under "Example Connection Configuration" (not committed here).
+CONFIG_EXAMPLE_CONNECT_WIFI=y
+# CONFIG_EXAMPLE_CONNECT_ETHERNET is not set
+
+# Board has 16MB flash (the default 2MB was leftover from the upstream example).
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+
+# `downlink/ota/json` (esp_https_ota) needs an otadata + ota_x partition layout,
+# which the default single-app partition table doesn't have. See partitions.csv.
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_PARTITION_TABLE_FILENAME="partitions.csv"

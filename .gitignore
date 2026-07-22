@@ -1,0 +1,23 @@
+# Build output
+build/
+
+# idf.py writes this backup whenever sdkconfig changes
+sdkconfig.old
+
+# Contains this device's live secrets (Wi-Fi password, Blynk auth token) -
+# sdkconfig.defaults is the checked-in, secret-free baseline; each dev/board
+# regenerates their own sdkconfig from it via `idf.py menuconfig`/build.
+sdkconfig
+
+# Fetched by the IDF Component Manager per dependencies.lock; not source.
+managed_components/
+
+# clangd index cache
+.cache/
+
+# Machine-specific absolute paths (ESP-IDF install location, build dir), not portable across machines
+.vscode/
+
+# OS cruft
+.DS_Store
+Thumbs.db

@@ -1,0 +1,41 @@
+menu "Blynk Configuration"
+
+    config BLYNK_MQTT_BROKER_URI
+        string "Blynk MQTT broker URI"
+        default "mqtts://fra1.blynk.cloud:8883"
+        help
+            URI of the Blynk MQTT broker (TLS). Must match the datacenter
+            region your Blynk account/device was created in, e.g.:
+              mqtts://fra1.blynk.cloud:8883  (Frankfurt)
+              mqtts://lon1.blynk.cloud:8883  (London)
+              mqtts://sgp1.blynk.cloud:8883  (Singapore)
+
+    config BLYNK_TEMPLATE_ID
+        string "Blynk Template ID"
+        default ""
+        help
+            Template ID from your Blynk.Console device template.
+            Sent as part of the device info payload on connect.
+
+    config BLYNK_AUTH_TOKEN
+        string "Blynk device Auth Token"
+        default ""
+        help
+            Per-device authentication token from Blynk.Console.
+            Used as the MQTT password (username is always "device").
+
+    config FIRMWARE_VERSION
+        string "Firmware version"
+        default "1.0.0"
+        help
+            Reported to Blynk.Cloud in the "info/mcu" message and embedded in
+            the binary info tag ("mcu" field) that Blynk's OTA server reads to
+            decide whether an update is needed. Bump this before each release.
+
+    config BOARD
+        string "Board identifier"
+        default "waveshare_esp32p4"
+        help
+            Hardware identifier embedded in the binary info tag's "hw" field.
+
+endmenu

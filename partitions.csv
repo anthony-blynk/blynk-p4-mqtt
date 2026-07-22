@@ -1,0 +1,9 @@
+# Name,   Type, SubType, Offset,  Size, Flags
+# Two-OTA-slot layout so `downlink/ota/json` (esp_https_ota) has somewhere to write.
+# Board has 16MB flash; 2M per app slot gives generous headroom over the current
+# sub-1MB image while leaving most of the flash unused/available.
+nvs,      data, nvs,     ,        0x6000,
+otadata,  data, ota,     ,        0x2000,
+phy_init, data, phy,     ,        0x1000,
+ota_0,    app,  ota_0,   ,        2M,
+ota_1,    app,  ota_1,   ,        2M,
